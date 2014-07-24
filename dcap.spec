@@ -17,17 +17,14 @@ Requires: zlib
 %endif
 
 BuildRequires: autotools
+Requires: zlib
 
 %prep
-%setup -n dcap
-# THIS PATCH IS COMPLETELY UNTESTED AND HAS THE SOLE PURPOSE OF BUILDING STUFF
-# ON MAC, REGARDLESS WHETHER IT WORKS OR NOT. It is however safe to include,
-# since every change is ifdeffed with __APPLE__.
-%patch0 -p1
-# Apply fork safety patch from Brian Bockelman
-%patch1 -p0
+%setup -n %{n}-%{realversion}
 
 %build
+unset MAGIC
+
 # Since we are using the checked out code, we need to regenerate the auto-tools
 # crap.
 # There is also a problem with the way they define library_includedir which I could fix only like this.
