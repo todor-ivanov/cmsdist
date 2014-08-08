@@ -122,7 +122,7 @@ cd ..; mv cmssw-config-%(echo %{configtag} | sed 's/^.//') config
 
 cd %_builddir
 echo %{configtag} > %_builddir/config/config_tag
-%_builddir/config/updateConfig.pl -p %{ucprojtype} -v %v -s $SCRAMV1_VERSION -t ${%{toolconf}} -a %cmsplatf \
+%_builddir/config/updateConfig.pl -p %{ucprojtype} -v %v -s $SCRAMV1_VERSION -t ${%{toolconf}} -a %cmsplatf --keys SCRAM_COMPILER=%{scram_compiler} \
 %if "%{?gitcommit:set}" == "set"
   --keys PROJECT_GIT_HASH=%{gitcommit}
 %else
@@ -153,6 +153,9 @@ grep -r -l -e "^#!.*perl.*" %{i}/%{srctree} | xargs perl -p -i -e "s|^#!.*perl(.
 
 %scramcmd arch
 cd %i/%{srctree}
+%if "%{?extra_tools:set}" == "set"
+for t in %{extra_tools}; do %scramcmd setup $t; done
+%endif
 %{?buildarch:%buildarch}
 
 export BUILD_LOG=yes
