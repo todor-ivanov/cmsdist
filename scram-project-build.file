@@ -204,9 +204,11 @@ export SCRAM_NOSYMCHECK=true
 LOG_WEB_DIR=%cmsroot/WEB/build-logs/%{cmsplatf}/%{v}
 rm -rf ${LOG_WEB_DIR}
 mkdir -p ${LOG_WEB_DIR}/logs/src
-pushd %{i}/tmp/%{cmsplatf}/cache/log/src
-  tar czf ${LOG_WEB_DIR}/logs/src/src-logs.tgz ./
-popd
+if [ -d %{i}/tmp/%{cmsplatf}/cache/log/src ]; then
+  pushd %{i}/tmp/%{cmsplatf}/cache/log/src
+    tar czf ${LOG_WEB_DIR}/logs/src/src-logs.tgz ./
+  popd
+fi
 
 %if "%{?saveDeps:set}" == "set"
 mkdir -p %i/etc/dependencies
