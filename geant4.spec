@@ -14,9 +14,6 @@ Requires: clhep
 Requires: expat
 Requires: xerces-c
 
-Patch0: geant4-10.0-no-banner
-Patch1: geant4-10.0.p01-dynamic-tls
-
 %define keep_archives true
 
 %if "%{?cms_cxx:set}" != "set"
@@ -25,9 +22,6 @@ Patch1: geant4-10.0.p01-dynamic-tls
 
 %prep
 %setup -n %{n}.%{realversion}
-
-%patch0 -p1
-%patch1 -p1
 
 %build
 
@@ -63,6 +57,7 @@ cmake ../%{n}.%{realversion} \
 %else
 cmake ../%{n}.%{realversion} \
   -DCMAKE_CXX_COMPILER="%cms_cxx" \
+  -DCMAKE_CXX_FLAGS="-fPIC" \
   -DCMAKE_INSTALL_PREFIX:PATH="%i" \
   -DCMAKE_INSTALL_LIBDIR="lib" \
   -DCMAKE_BUILD_TYPE=Release \
@@ -80,12 +75,18 @@ cmake ../%{n}.%{realversion} \
   -DGEANT4_BUILD_MULTITHREADED=OFF \
 %endif
 
-make %makeprocesses VERBOSE=1
+make %makeprocesses
 
 %install
 
 cd ../build
 make install
+
+mkdir -p %i/lib/archive
+cd %i/lib/archive
+find %i/lib -name "*.a" -exec ar x {} \;
+ar rcs libgeant4-static.a *.o
+find . -name "*.o" -delete
 
 %post
 %{relocateConfig}lib/Geant4-*/Geant4Config.cmake
