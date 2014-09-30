@@ -42,6 +42,7 @@ Requires: jemalloc-toolfile
 Requires: jimmy-toolfile
 Requires: ktjet-toolfile
 Requires: lhapdf-toolfile
+Requires: lhapdf6-toolfile
 Requires: libhepml-toolfile
 Requires: libjpg-toolfile
 Requires: libpng-toolfile
@@ -156,7 +157,7 @@ Requires: glibc-toolfile
 %endif
 %endif
 
-%define skipreqtools jcompiler lhapdfwrapfull lhapdffull icc-cxxcompiler icc-ccompiler icc-f77compiler cuda rivet2 opencl opencl-cpp
+%define skipreqtools jcompiler lhapdfwrapfull lhapdffull icc-cxxcompiler icc-ccompiler icc-f77compiler cuda rivet2 opencl opencl-cpp lhapdf6
 
 ## IMPORT scramv1-tool-conf
 
