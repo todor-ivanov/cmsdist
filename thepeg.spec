@@ -20,18 +20,16 @@ Requires: lhapdf
 Requires: gsl
 Requires: hepmc
 Requires: zlib
+BuildRequires: autotools
 # FIXME: rivet?
 %define keep_archives true
-%if "%(case %cmsplatf in (osx*_*_gcc421) echo true ;; (*) echo false ;; esac)" == "true"
-Requires: gfortran-macosx
-%endif
 
 %if "%{?cms_cxx:set}" != "set"
 %define cms_cxx c++
 %endif
 
 %if "%{?cms_cxxflags:set}" != "set"
-%define cms_cxxflags -O2 -std=c++0x
+%define cms_cxxflags -O2 -std=c++11
 %endif
 
 %prep
@@ -79,13 +77,11 @@ case %cmsplatf in
   ;;
 esac
 
-case %cmsplatf in
-  osx*) LIBGFORTRAN="`gfortran --print-file-name=libgfortran.a`" ;;
-esac
-
-case %cmsplatf in
-  osx*_*_gcc4[0-5]*) ;;
-  osx*_*_gcc*) LIBQUADMATH="-lquadmath" ;;
+case %{cmsplatf} in
+  osx*)
+    LIBGFORTRAN="$(gfortran --print-file-name=libgfortran.a)"
+    LIBQUADMATH="-lquadmath"
+    ;;
 esac
 
 ./configure $PLATF_CONF_OPTS \
@@ -98,15 +94,14 @@ esac
             LIBS="-L$LHAPDF_ROOT/lib -lLHAPDF $LIBGFORTRAN -L$ZLIB_ROOT/lib -lz $LIBQUADMATH"
 make
 
-%install
+make %{makeprocesses}
 
+%install
 make install
-cd %i/lib/ThePEG
-for item in LesHouches.so ; do
-  [ -e lib$item ] || ln -s $item lib$item
-done
-find %i/lib -name '*.la' -exec rm -f {} \;
+find %{i}/lib -name '*.la' -exec rm -f {} \;
 
 %post
 %{relocateConfig}lib/ThePEG/Makefile.common
-%{relocateConfig}lib/ThePEG/libtool
+%{relocateConfig}lib/ThePEG/Makefile
+%{relocateConfig}lib/ThePEG/ThePEGDefaults.rpo
+%{relocateConfig}lib/ThePEG/ThePEGDefaults-1.9.2.rpo
